@@ -1,0 +1,21 @@
+# Conda 环境：Python 3.11，双机协同追踪项目
+name: bishe
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - pyyaml
+  - matplotlib
+  - pandas
+  - scikit-learn
+  - tqdm
+  - pip:
+    - PyYAML>=6.0
+    - torch>=2.0
+    - gymnasium>=0.29
+    - stable-baselines3>=2.0
+    - sb3-contrib  # 可选：额外算法

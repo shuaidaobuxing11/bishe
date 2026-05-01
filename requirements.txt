@@ -1,0 +1,10 @@
+# 若不用 conda，可用: pip install -r requirements.txt (建议 Python 3.11)
+torch>=2.0
+numpy
+gymnasium>=0.29
+stable-baselines3>=2.0
+pyyaml
+matplotlib
+pandas
+scikit-learn
+tqdm

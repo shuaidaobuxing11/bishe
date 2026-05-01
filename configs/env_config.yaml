@@ -1,0 +1,11 @@
+# 双机协同追踪单目标 — 环境参数
+env_id: CoopTracking-v0
+max_episode_steps: 200
+arena_size: 10.0          # 2D 区域 [-arena_size, arena_size]
+uav_speed_max: 0.5
+uav_speed_min: 0.1
+target_speed: 0.3
+success_distance: 0.8     # 两机与目标距离均小于此视为追踪成功
+collision_distance: 0.5   # 两机距离小于此罚分
+n_actions_per_uav: 5     # 每架机 5 种离散动作
+seed: 42

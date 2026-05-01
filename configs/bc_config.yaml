@@ -1,0 +1,18 @@
+# BC 仅从混合数据集中抽样 expert + recovery，监督标签为 expert_action
+offline_data:
+  save_path: data/offline/mixed_offline_dataset.pkl
+
+bc_train:
+  use_data_modes:
+    - expert
+    - recovery
+  label_mode: expert_action
+
+behavior_cloning:
+  batch_size: 64
+  epochs: 50
+  learning_rate: 0.001
+  save_path: models/bc_pretrain.pt
+  split: [0.8, 0.1, 0.1]
+  split_seed: 42
+  metrics_path: results/bc_metrics.npz

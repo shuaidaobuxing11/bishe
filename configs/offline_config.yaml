@@ -1,0 +1,47 @@
+# 离线数据与行为克隆参数
+offline_data:
+  n_episodes: 500
+  max_steps: 200
+  save_dir: data/offline
+  seed: 42
+  # 规则专家: v1=原规则(仅加速/保持/减速), v2=带转向+更合理避碰(推荐)
+  expert: v2
+  # 扩大离线数据覆盖：
+  # - near_uavs / near_border：更困难初始分布（产生更多失败/恢复轨迹）
+  # - noisy_target：目标扰动（产生扰动恢复轨迹）
+  # ratio 之和应为 1.0（按 n_episodes 总数加权采样）
+  # 若不指定 save_path，则在 data/offline/ 下生成 mixed_offline_dataset.pkl
+  save_path: data/offline/mixed_offline_dataset.pkl
+  summary_path: data/offline/dataset_summary.json
+  extended_npz_path: data/offline/offline_trajectories_full.npz
+  legacy_npz_path: data/offline/offline_trajectories.npz
+
+  mix_env_variants:
+    - ratio: 0.6
+      config: {}  # default
+    - ratio: 0.15
+      config:
+        spawn_mode: near_uavs
+    - ratio: 0.15
+      config:
+        spawn_mode: near_border
+    - ratio: 0.10
+      config:
+        noise_sigma: 0.3
+
+# BC：混合数据下默认不用 suboptimal；recovery 用 expert_action 作监督
+bc_train:
+  use_data_modes:
+    - expert
+    - recovery
+  label_mode: expert_action
+
+behavior_cloning:
+  batch_size: 64
+  epochs: 50
+  learning_rate: 0.001
+  save_path: models/bc_pretrain.pt
+  # 训练集/验证集/测试集划分（按 transition 随机划分）
+  split: [0.8, 0.1, 0.1]
+  split_seed: 42
+  metrics_path: results/bc_metrics.npz

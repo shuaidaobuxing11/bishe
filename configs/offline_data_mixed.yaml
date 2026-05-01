@@ -1,0 +1,69 @@
+# 多场景 + recovery + suboptimal 混合离线数据集（示例：800 episodes）
+offline_data:
+  n_episodes: 800
+  max_steps: 200
+  save_dir: data/offline
+  seed: 42
+  expert: v2
+
+  save_path: data/offline/mixed_offline_dataset.pkl
+  summary_path: data/offline/dataset_summary.json
+  extended_npz_path: data/offline/offline_trajectories_full.npz
+  legacy_npz_path: data/offline/offline_trajectories.npz
+
+  mix_env_variants:
+    - name: default_expert
+      ratio: 0.45
+      policy: expert_v2
+      config: {}
+
+    - name: near_uavs_expert
+      ratio: 0.15
+      policy: expert_v2
+      config:
+        spawn_mode: near_uavs
+
+    - name: near_border_expert
+      ratio: 0.15
+      policy: expert_v2
+      config:
+        spawn_mode: near_border
+
+    - name: noisy_target_expert
+      ratio: 0.10
+      policy: expert_v2
+      config:
+        noise_sigma: 0.3
+
+    - name: recovery_expert
+      ratio: 0.10
+      policy: expert_v2
+      data_mode: recovery
+      config:
+        perturb_expert_actions: true
+        perturb_prob: 0.3
+        perturb_steps_min: 5
+        perturb_steps_max: 20
+
+    - name: suboptimal
+      ratio: 0.05
+      policy: noisy_expert
+      data_mode: suboptimal
+      config:
+        policy_noise_prob: 0.5
+
+# BC：默认仅用 expert + recovery；标签用 expert_action（纠错监督）
+bc_train:
+  use_data_modes:
+    - expert
+    - recovery
+  label_mode: expert_action
+
+behavior_cloning:
+  batch_size: 64
+  epochs: 50
+  learning_rate: 0.001
+  save_path: models/bc_pretrain.pt
+  split: [0.8, 0.1, 0.1]
+  split_seed: 42
+  metrics_path: results/bc_metrics.npz

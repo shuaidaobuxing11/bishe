@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.env
+.Python
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 训练产物与大体量数据（脚本可重新生成；保留目录结构用 .gitkeep）
+data/offline/*.npz
+data/offline/*.pkl
+!data/offline/.gitkeep
+
+models/*.pt
+models/*.zip
+models/**/*.pt
+models/**/*.zip
+!models/.gitkeep
+
+# TensorBoard
+runs/
+tb_logs/
+
+# OS
+Thumbs.db
+Desktop.ini

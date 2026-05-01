@@ -1,0 +1,2 @@
+n_seeds,baseline_mean_return_mean,baseline_mean_return_std,baseline_win_rate_mean,baseline_win_rate_std,finetune_mean_return_mean,finetune_mean_return_std,finetune_win_rate_mean,finetune_win_rate_std,delta_return_mean,delta_return_std,delta_win_rate_mean,delta_win_rate_std
+5,-15.146669255161806,0.02901517396194677,1.0,0.0,-15.847516709527088,0.2853899410692749,1.0,0.0,-0.7008474543652834,0.2803560219093142,0.0,0.0

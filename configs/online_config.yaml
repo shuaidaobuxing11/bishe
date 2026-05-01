@@ -1,0 +1,11 @@
+# 在线 RL 训练参数（纯在线基线 / 离线+在线微调 共用）
+total_timesteps: 200000
+n_steps: 2048
+batch_size: 64
+n_epochs: 10
+learning_rate: 0.0003
+gamma: 0.99
+net_arch:
+  pi: [64, 64]
+  vf: [64, 64]
+seed: 42

@@ -1,0 +1,8 @@
+# 离线 RL / PORL 用：导出含 suboptimal 的「实际执行动作」npz，供 DualReplayBuffer.load_offline
+offline_rl:
+  dataset_path: data/offline/mixed_offline_dataset.pkl
+  use_data_modes:
+    - expert
+    - recovery
+    - suboptimal
+  export_npz: data/offline/offline_trajectories_rl.npz

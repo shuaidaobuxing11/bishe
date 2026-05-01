@@ -1,0 +1,30 @@
+# 分阶段训练配置：离线 -> 混合回放+保守约束 -> 可选 PPO 微调
+
+phase1_offline:
+  n_episodes: 500
+  max_steps: 200
+  save_dir: data/offline
+  seed: 42
+  expert: v2
+  bc_epochs: 50
+  bc_batch_size: 64
+  bc_lr: 0.001
+  bc_save_path: models/bc_pretrain.pt
+  offline_data_path: data/offline/offline_trajectories.npz
+
+phase2_mixed:
+  # 混合回放
+  offline_ratio: 0.8
+  conservative_coef: 1.0
+  mixed_steps: 5000
+  mixed_batch_size: 64
+  mixed_lr: 0.001
+  bc_mixed_save_path: models/bc_mixed.pt
+  mixed_metrics_path: results/bc_mixed_metrics.npz
+  # 可选：阶段2前先收集多少条在线数据（0 表示仅用已有在线数据或仅离线）
+  collect_online_steps: 20000
+
+phase3_ppo:
+  total_timesteps: 200000
+  bc_init_path: models/bc_mixed.pt  # 从混合 BC 初始化；若不存在则用 bc_pretrain.pt
+  save_path: models/ppo_finetune_from_bc.zip

@@ -1,0 +1,57 @@
+{
+  "total_episodes": 800,
+  "total_transitions": 71726,
+  "scenario_counts": {
+    "default_expert": 360,
+    "near_uavs_expert": 120,
+    "near_border_expert": 120,
+    "noisy_target_expert": 80,
+    "recovery_expert": 80,
+    "suboptimal": 40
+  },
+  "transition_counts_by_scenario": {
+    "default_expert": 33616,
+    "near_uavs_expert": 14138,
+    "near_border_expert": 2219,
+    "noisy_target_expert": 10190,
+    "recovery_expert": 7674,
+    "suboptimal": 3889
+  },
+  "success_rate_by_scenario": {
+    "default_expert": 0.9055555555555556,
+    "near_uavs_expert": 0.7666666666666667,
+    "near_border_expert": 0.9916666666666667,
+    "noisy_target_expert": 0.7,
+    "recovery_expert": 0.9125,
+    "suboptimal": 0.9
+  },
+  "collision_rate_by_scenario": {
+    "default_expert": 0.5805555555555556,
+    "near_uavs_expert": 0.8583333333333333,
+    "near_border_expert": 0.6333333333333333,
+    "noisy_target_expert": 0.5375,
+    "recovery_expert": 0.575,
+    "suboptimal": 0.625
+  },
+  "mean_return_by_scenario": {
+    "default_expert": -54.622896997948594,
+    "near_uavs_expert": -140.56908659651077,
+    "near_border_expert": -7.867470521813856,
+    "noisy_target_expert": -82.18820818788853,
+    "recovery_expert": -61.995181990325726,
+    "suboptimal": -63.73788475653968
+  },
+  "mean_length_by_scenario": {
+    "default_expert": 93.37777777777778,
+    "near_uavs_expert": 117.81666666666666,
+    "near_border_expert": 18.491666666666667,
+    "noisy_target_expert": 127.375,
+    "recovery_expert": 95.925,
+    "suboptimal": 97.225
+  },
+  "quality_counts": {
+    "high": 17045,
+    "medium": 30542,
+    "low": 24139
+  }
+}
