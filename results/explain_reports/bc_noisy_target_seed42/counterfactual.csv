@@ -1,0 +1,7 @@
+﻿feature_perturbed,delta,original_action,new_action,changed,explanation
+target_x_norm,0.1,11,11,False,当 target_x_norm 增加 0.1 后，动作由 turn_right/turn_left 变为 turn_right/turn_left，动作未变，说明对该扰动不敏感。
+target_y_norm,0.1,11,11,False,当 target_y_norm 增加 0.1 后，动作由 turn_right/turn_left 变为 turn_right/turn_left，动作未变，说明对该扰动不敏感。
+uav1_x_norm,0.1,11,11,False,当 uav1_x_norm 增加 0.1 后，动作由 turn_right/turn_left 变为 turn_right/turn_left，动作未变，说明对该扰动不敏感。
+uav2_x_norm,0.1,11,11,False,当 uav2_x_norm 增加 0.1 后，动作由 turn_right/turn_left 变为 turn_right/turn_left，动作未变，说明对该扰动不敏感。
+uav1_vx_norm,0.1,11,11,False,当 uav1_vx_norm 增加 0.1 后，动作由 turn_right/turn_left 变为 turn_right/turn_left，动作未变，说明对该扰动不敏感。
+uav2_vx_norm,0.1,11,11,False,当 uav2_vx_norm 增加 0.1 后，动作由 turn_right/turn_left 变为 turn_right/turn_left，动作未变，说明对该扰动不敏感。

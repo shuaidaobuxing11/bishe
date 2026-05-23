@@ -114,7 +114,106 @@ python scripts/run_all_experiments.py
 
 依次执行：生成离线数据 → BC 预训练 → 纯在线基线 → 离线+在线微调 → 评估。
 
-## 可解释性
+## 轨迹动画与策略可解释性（新增）
+
+依赖（Captum 必选；SHAP 可选）：
+
+```bash
+pip install captum shap
+```
+
+### 1. 录制轨迹
+
+```bash
+python scripts/record_trajectory.py \
+  --model_path models/ppo_online_baseline.zip \
+  --policy_name ppo_baseline \
+  --scenario default \
+  --save_dir results/trajectories \
+  --n_cases 5
+```
+
+输出：`results/trajectories/{policy}_{scenario}_{case_id}.json` 与同名的 `.csv`。
+
+### 2. 生成 GIF 动画
+
+```bash
+python scripts/make_trajectory_animation.py \
+  --trajectory_path results/trajectories/ppo_baseline_default_0.json \
+  --save_path results/animations/ppo_baseline_default_0.gif \
+  --fps 10
+```
+
+MP4 需本机 ffmpeg；失败时自动降级为 GIF。
+
+### 3. 多策略轨迹静态对比
+
+```bash
+python scripts/compare_policy_trajectories.py \
+  --scenario default \
+  --baseline_path models/ppo_online_baseline.zip \
+  --finetune_path models/ppo_finetune_from_bc.zip \
+  --kl_path models/ppo_finetune_kl.zip \
+  --save_dir results/animations
+```
+
+输出：`results/animations/compare_{scenario}.png` 与 PDF。
+
+### 4. Captum 特征重要性（Integrated Gradients / Saliency）
+
+整段 episode 平均重要性：
+
+```bash
+python scripts/explain_policy_captum.py \
+  --model_path models/ppo_online_baseline.zip \
+  --policy_name ppo_baseline \
+  --scenario default \
+  --trajectory_path results/trajectories/ppo_baseline_default_0.json \
+  --method integrated_gradients \
+  --save_dir results/explain \
+  --mode episode
+```
+
+单步状态解释：`--mode single`。成功/失败对比：`--mode success_vs_fail`。多策略热力图：`--mode compare_policies`。
+
+输出示例：
+
+- `results/explain/ppo_baseline_default_episode_importance.csv/.png`
+- `results/explain/success_vs_failure_importance.png`
+- `results/explain/policy_importance_compare_default.png`
+
+### 5. SHAP（可选）
+
+```bash
+python scripts/explain_policy_shap.py \
+  --model_path models/ppo_online_baseline.zip \
+  --trajectory_path results/trajectories/ppo_baseline_default_0.json \
+  --save_dir results/explain
+```
+
+若未安装 `shap`，脚本会提示优先使用 Captum。
+
+### 7. 同 seed 多策略一键录制与对比
+
+```bash
+python scripts/record_all_policy_trajectories.py --scenario default --seed 42
+python scripts/make_all_policy_comparison_animation.py --scenario default --seed 42
+```
+
+输出示例：
+
+- `results/trajectories/expert_v2_default_seed42.json`
+- `results/animations/compare_all_policies_default_seed42.gif`
+- `results/animations/step_table_default_seed42.csv`
+- `results/animations/metrics_summary_default_seed42.csv`
+
+含 expert_v2 / BC / PPO baseline / finetune / finetune+KL（模型存在则自动加载）。
+
+`streamlit run demo/streamlit_app.py` 中新增 **「轨迹动画」** 与 **「策略可解释性」** 页签，可浏览 `results/animations/` 与 `results/explain/` 下已生成文件。
+
+配置：`configs/visualization_config.yaml`、`configs/explain_config.yaml`。
+
+## 可解释性（原有）
 
 - **特征重要性**（基于策略网络权重或梯度）：
   ```bash

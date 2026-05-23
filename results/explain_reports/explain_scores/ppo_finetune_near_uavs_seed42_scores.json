@@ -1,0 +1,12 @@
+{
+  "target_absolute_score": 0.132,
+  "uav_absolute_score": 0.373,
+  "target_relative_score": 0.379,
+  "inter_uav_coordination_score": 0.134,
+  "safety_score": 0.158,
+  "velocity_score": 0.02,
+  "action_stability_score": 0.955,
+  "task_efficiency_score": 0.721,
+  "scenario_alignment_score": 0.187,
+  "explanation_source": "captum_and_trajectory"
+}

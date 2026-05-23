@@ -1,0 +1,3 @@
+﻿policy_name,explanation_source,success,episode_return,episode_length,target_absolute_score,uav_absolute_score,target_relative_score,inter_uav_coordination_score,safety_score,velocity_score,action_stability_score,task_efficiency_score,scenario_alignment_score
+bc,rule_and_trajectory,False,-119.49548716344695,200,0.002,0.019,0.631,0.227,0.057,0.0,0.276,0.007,0.113
+expert_v2,rule_and_trajectory,False,-196.63342931867118,200,0.0,0.0,0.465,0.346,0.0,0.0,0.487,0.0,0.106

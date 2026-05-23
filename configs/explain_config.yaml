@@ -1,0 +1,22 @@
+# Captum / SHAP 解释默认参数
+save_dir: results/explain
+device: cpu
+method: integrated_gradients  # integrated_gradients | saliency
+top_k_plot: 12
+max_episode_steps_for_explain: null
+
+policies:
+  ppo_baseline:
+    path: models/ppo_online_baseline.zip
+  ppo_finetune:
+    path: models/ppo_finetune_from_bc.zip
+  ppo_finetune_kl:
+    path: models/ppo_finetune_kl.zip
+  bc:
+    path: models/bc_pretrain.pt
+
+scenarios:
+  - default
+  - near_uavs
+  - near_border
+  - noisy_target

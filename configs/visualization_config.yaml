@@ -1,0 +1,52 @@
+# 轨迹可视化默认参数
+save_dir: results/trajectories
+animation_dir: results/animations
+
+policies:
+  expert_v2:
+    type: expert
+    enabled: true
+
+  bc:
+    type: bc
+    enabled: true
+    model_path: models/bc_pretrain_best.pt
+
+  ppo_baseline:
+    type: ppo
+    enabled: true
+    model_path: models/ppo_online_baseline.zip
+
+  ppo_finetune:
+    type: ppo
+    enabled: true
+    model_path: models/ppo_finetune_from_bc.zip
+
+  ppo_finetune_kl:
+    type: ppo
+    enabled: true
+    model_path: models/ppo_finetune_kl.zip
+
+scenarios:
+  - default
+  - near_uavs
+  - near_border
+  - noisy_target
+
+seeds:
+  - 42
+  - 123
+  - 2026
+
+record:
+  max_steps: 200
+  deterministic: true
+
+animation:
+  fps: 10
+  save_gif: true
+  save_mp4: false
+
+outputs:
+  trajectory_dir: results/trajectories
+  animation_dir: results/animations

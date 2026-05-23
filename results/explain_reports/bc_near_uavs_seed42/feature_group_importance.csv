@@ -1,0 +1,6 @@
+﻿group,raw_importance,feature_count,features_used,normalized_importance,allow_overlap
+target_absolute,70.68654251098633,2,"target_x_norm,target_y_norm",0.3581448865990289,True
+uav_absolute,101.72928714752197,4,"uav1_x_norm,uav1_y_norm,uav2_x_norm,uav2_y_norm",0.5154280109765822,True
+velocity,8.41941213607788,4,"uav1_vx_norm,uav1_vy_norm,uav2_vx_norm,uav2_vy_norm",0.04265832360151781,True
+inter_uav_coordination,10.66569540284188,0,trajectory:inter_uav_coordination,0.05403948382334436,True
+target_relative,5.867628307530325,0,trajectory:target_relative,0.02972929499952674,True

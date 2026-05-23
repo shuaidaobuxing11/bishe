@@ -1,0 +1,56 @@
+policies:
+  expert_v2:
+    enabled: true
+    type: expert
+    model_path: null
+
+  bc:
+    enabled: true
+    type: bc
+    model_path: models/bc_pretrain_best.pt
+
+  ppo_baseline:
+    enabled: true
+    type: ppo
+    model_path: models/ppo_online_baseline.zip
+
+  ppo_finetune:
+    enabled: true
+    type: ppo
+    model_path: models/ppo_finetune_from_bc.zip
+
+  ppo_finetune_kl:
+    enabled: true
+    type: ppo
+    model_path: models/ppo_finetune_kl.zip
+
+scenarios:
+  - default
+  - near_uavs
+  - near_border
+  - noisy_target
+
+seeds:
+  - 42
+  - 123
+  - 2026
+
+explain:
+  method: integrated_gradients
+  device: cpu
+  top_k_features: 10
+  enable_keyframe_explanation: true
+  enable_counterfactual: true
+  enable_group_importance: true
+  enable_auto_text_report: true
+
+thresholds:
+  high_action_switch_rate: 0.45
+  unsafe_uav_distance: 0.5
+  poor_tracking_distance: 2.5
+  low_scenario_alignment: 0.4
+
+outputs:
+  explain_report_dir: results/explain_reports
+  explain_score_dir: results/explain_scores
+  explain_comparison_dir: results/explain_comparisons

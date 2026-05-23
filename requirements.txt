@@ -8,3 +8,5 @@ matplotlib
 pandas
 scikit-learn
 tqdm
+captum>=0.7
+shap>=0.44
