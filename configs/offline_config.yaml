@@ -41,7 +41,8 @@ behavior_cloning:
   epochs: 50
   learning_rate: 0.001
   save_path: models/bc_pretrain.pt
-  # 训练集/验证集/测试集划分（按 transition 随机划分）
+  # 混合 pickle 含 episode_id 时建议 true：按整条轨迹划分，避免 train/val 同一轨迹重叠
+  split_by_episode: true
   split: [0.8, 0.1, 0.1]
   split_seed: 42
   metrics_path: results/bc_metrics.npz

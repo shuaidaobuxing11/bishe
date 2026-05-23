@@ -1,0 +1,22 @@
+{
+  "dataset": "data\\offline\\mixed_offline_dataset.pkl",
+  "n_episodes_used": 500,
+  "filter_expert_mode_only": false,
+  "overall_success_rate": 0.886,
+  "mean_return": -58.7941933728829,
+  "median_return": -43.55513572692871,
+  "mean_episode_length": 87.298,
+  "median_episode_length": 73.0,
+  "success_rate_by_scenario": {
+    "variant_0": 0.9033333333333333,
+    "variant_1": 0.84,
+    "variant_2": 0.9866666666666667,
+    "variant_3": 0.7
+  },
+  "figures": [
+    "results\\offline_dataset_quality.png",
+    "results\\offline_dataset_success_by_scenario.png",
+    "results\\offline_dataset_return_distribution.png",
+    "results\\offline_dataset_length_distribution.png"
+  ]
+}

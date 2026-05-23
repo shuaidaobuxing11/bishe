@@ -460,8 +460,10 @@ def filter_for_bc(
     merged: Mapping[str, np.ndarray],
     use_data_modes: Sequence[str],
     label_mode: str,
-) -> Tuple[np.ndarray, np.ndarray]:
-    """返回 (obs, labels) 用于 BC。"""
+    *,
+    return_episode_ids: bool = False,
+) -> Tuple[np.ndarray, ...]:
+    """返回 (obs, labels)，若 return_episode_ids 则附带与 obs 对齐的 episode_id 向量。"""
     mode_set = {m.lower() for m in use_data_modes}
     allowed_ids = [DATA_MODE_TO_INT[m] for m in mode_set if m in DATA_MODE_TO_INT]
     if not allowed_ids:
@@ -476,7 +478,14 @@ def filter_for_bc(
         y = merged["actions"][dm_mask].astype(np.int64)
     else:
         raise ValueError(f"未知 label_mode: {label_mode}")
-    return obs, y
+    if not return_episode_ids:
+        return (obs, y)
+
+    ep = merged["episode_id"]
+    if ep.ndim != 1:
+        ep = ep.reshape(-1)
+    ep = ep[dm_mask].astype(np.int32, copy=False)
+    return (obs, y, ep)
 
 
 def filter_for_offline_rl_mask(merged: Mapping[str, np.ndarray], use_data_modes: Sequence[str]) -> np.ndarray:

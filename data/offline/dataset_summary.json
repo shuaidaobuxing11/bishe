@@ -1,57 +1,45 @@
 {
-  "total_episodes": 800,
-  "total_transitions": 71726,
+  "total_episodes": 500,
+  "total_transitions": 43649,
   "scenario_counts": {
-    "default_expert": 360,
-    "near_uavs_expert": 120,
-    "near_border_expert": 120,
-    "noisy_target_expert": 80,
-    "recovery_expert": 80,
-    "suboptimal": 40
+    "variant_0": 300,
+    "variant_1": 75,
+    "variant_2": 75,
+    "variant_3": 50
   },
   "transition_counts_by_scenario": {
-    "default_expert": 33616,
-    "near_uavs_expert": 14138,
-    "near_border_expert": 2219,
-    "noisy_target_expert": 10190,
-    "recovery_expert": 7674,
-    "suboptimal": 3889
+    "variant_0": 28249,
+    "variant_1": 7297,
+    "variant_2": 1520,
+    "variant_3": 6583
   },
   "success_rate_by_scenario": {
-    "default_expert": 0.9055555555555556,
-    "near_uavs_expert": 0.7666666666666667,
-    "near_border_expert": 0.9916666666666667,
-    "noisy_target_expert": 0.7,
-    "recovery_expert": 0.9125,
-    "suboptimal": 0.9
+    "variant_0": 0.9033333333333333,
+    "variant_1": 0.84,
+    "variant_2": 0.9866666666666667,
+    "variant_3": 0.7
   },
   "collision_rate_by_scenario": {
-    "default_expert": 0.5805555555555556,
-    "near_uavs_expert": 0.8583333333333333,
-    "near_border_expert": 0.6333333333333333,
-    "noisy_target_expert": 0.5375,
-    "recovery_expert": 0.575,
-    "suboptimal": 0.625
+    "variant_0": 0.5966666666666667,
+    "variant_1": 0.8,
+    "variant_2": 0.6266666666666667,
+    "variant_3": 0.68
   },
   "mean_return_by_scenario": {
-    "default_expert": -54.622896997948594,
-    "near_uavs_expert": -140.56908659651077,
-    "near_border_expert": -7.867470521813856,
-    "noisy_target_expert": -82.18820818788853,
-    "recovery_expert": -61.995181990325726,
-    "suboptimal": -63.73788475653968
+    "variant_0": -54.428623730802954,
+    "variant_1": -107.43273535094492,
+    "variant_2": -10.578743920212228,
+    "variant_3": -84.3529706914621
   },
   "mean_length_by_scenario": {
-    "default_expert": 93.37777777777778,
-    "near_uavs_expert": 117.81666666666666,
-    "near_border_expert": 18.491666666666667,
-    "noisy_target_expert": 127.375,
-    "recovery_expert": 95.925,
-    "suboptimal": 97.225
+    "variant_0": 94.16333333333333,
+    "variant_1": 97.29333333333334,
+    "variant_2": 20.266666666666666,
+    "variant_3": 131.66
   },
   "quality_counts": {
-    "high": 17045,
-    "medium": 30542,
-    "low": 24139
+    "high": 10233,
+    "medium": 19359,
+    "low": 14057
   }
 }

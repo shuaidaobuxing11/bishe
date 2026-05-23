@@ -39,6 +39,17 @@ code/
 └── README.md
 ```
 
+## 可视化 Demo（Streamlit，独立模块）
+
+不依赖训练脚本，用于答辩/系统展示入口：
+
+```bash
+pip install -r requirements-demo.txt
+streamlit run demo/streamlit_app.py
+```
+
+说明见 `demo/README.md`。默认使用内置 **Stub** 飞行仿真；可选接入 **JSBSim**（需自行安装并配置 `JSBSIM_ROOT`）。
+
 ## 快速运行
 
 在项目根目录 `code/` 下执行。

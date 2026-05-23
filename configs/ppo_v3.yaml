@@ -1,0 +1,42 @@
+# 三机协同 CoopTrackingEnvV3 — PPO 训练配置（SB3）
+
+env:
+  max_episode_steps: 200
+  arena_size: 10.0
+  num_uavs: 3
+  uav_speed_min: 0.1
+  uav_speed_max: 0.5
+  target_speed: 0.3
+  success_distance: 0.8
+  collision_distance: 0.5
+  turn_angle: 0.12
+  accel: 0.05
+  target_heading_noise_std: 0.05
+  desired_pair_distance: 2.5
+  formation_coef: 0.08
+
+ppo:
+  learning_rate: 3.0e-4
+  gamma: 0.99
+  batch_size: 256
+  n_steps: 2048
+  n_epochs: 10
+  ent_coef: 0.01
+
+training:
+  total_timesteps: 200000
+  seed: 42
+  model_dir: "models/ppo_v3"
+  model_name: "ppo_coop_v3"
+  log_interval: 10
+
+eval_end:
+  n_episodes: 20
+
+# 训练过程定期评估 → results/v3/training_curves.csv，供绘图脚本使用
+curve_eval:
+  enabled: true
+  method_name: "ppo_v3"
+  eval_freq: 20000
+  n_episodes: 10
+  out_csv: "results/v3/training_curves.csv"

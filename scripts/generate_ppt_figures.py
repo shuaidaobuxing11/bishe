@@ -7,7 +7,7 @@
 5) fig5_baseline_table.png      baseline 表格图（default）
 6) fig6_unseen_generalization.png 未见条件表格图（2/4/5）
 7) fig7_bc_mixed_curves.png     PORL/phase2：混合回放+保守约束训练曲线（如已生成 bc_mixed_metrics）
-8) fig8_training_curves.png     PPO baseline vs finetune：训练曲线对比（success_rate/return）
+8) fig8_training_curves.png / fig8_training_curves_three_way.png  训练曲线（双路 / 三路 baseline·finetune·KL）
 
 该脚本会在缺少前置文件时，尽量自动调用对应脚本生成；若仍缺失则提示你先跑哪一步。
 """
@@ -94,11 +94,15 @@ def main():
             "绘制 fig7_bc_mixed_curves.png",
         )
 
-    # 8) fig8：PPO 训练曲线对比（baseline vs finetune）
+    # 8) fig8：PPO 训练曲线（双路 + 三路 baseline / finetune / KL）
     if os.path.isfile("results/training_curves.csv"):
         _run(
             "python scripts/plot_training_curves.py --csv results/training_curves.csv --out results/fig8_training_curves.png",
-            "绘制 fig8_training_curves.png",
+            "绘制 fig8_training_curves.png（双路）",
+        )
+        _run(
+            "python scripts/plot_training_curves.py --csv results/training_curves.csv --triplet --out results/fig8_training_curves_three_way.png",
+            "绘制 fig8_training_curves_three_way.png（三路）",
         )
 
     print("\n全部图已输出到 results/：")
@@ -111,6 +115,7 @@ def main():
         "results/fig6_unseen_generalization.png",
         "results/fig7_bc_mixed_curves.png",
         "results/fig8_training_curves.png",
+        "results/fig8_training_curves_three_way.png",
     ]:
         print("-", f)
 

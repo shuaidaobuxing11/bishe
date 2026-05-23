@@ -44,6 +44,30 @@ class BCNet(nn.Module):
             return action.cpu().numpy().squeeze()
 
 
+def _split_indices_episode_level(
+    episode_ids: np.ndarray,
+    split: tuple[float, float, float],
+    rng: np.random.Generator,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """按整条轨迹划分 train/val/test，避免相邻 transition 同时出现在 train 与 val。"""
+    from offline_rl.mixed_dataset import allocate_episode_counts
+
+    ep = np.asarray(episode_ids, dtype=np.int64).reshape(-1)
+    unique_eps = np.unique(ep)
+    n_ep = int(len(unique_eps))
+    counts = allocate_episode_counts(n_ep, list(split))
+    perm = rng.permutation(n_ep)
+    shuffled = unique_eps[perm]
+    cut1, cut2 = counts[0], counts[0] + counts[1]
+    tr_ep = set(shuffled[:cut1].tolist())
+    va_ep = set(shuffled[cut1:cut2].tolist())
+    te_ep = set(shuffled[cut2:].tolist())
+    m_tr = np.isin(ep, list(tr_ep))
+    m_va = np.isin(ep, list(va_ep))
+    m_te = np.isin(ep, list(te_ep))
+    return np.flatnonzero(m_tr), np.flatnonzero(m_va), np.flatnonzero(m_te)
+
+
 def train_bc(
     replay_buffer=None,
     *,
@@ -59,6 +83,7 @@ def train_bc(
     split=(0.8, 0.1, 0.1),
     split_seed=42,
     metrics_path=None,
+    split_by_episode: bool = True,
 ):
     bc_train = bc_train or {}
 
@@ -71,12 +96,24 @@ def train_bc(
         merged, _ = load_mixed_bundle(mixed_dataset_path)
         modes = tuple(bc_train.get("use_data_modes", ("expert", "recovery")))
         label_mode = str(bc_train.get("label_mode", "expert_action"))
-        obs_np, act_np = filter_for_bc(merged, modes, label_mode)
+        use_ep_split = bool(split_by_episode) and ("episode_id" in merged)
+        if use_ep_split:
+            obs_np, act_np, ep_np = filter_for_bc(
+                merged, modes, label_mode, return_episode_ids=True
+            )
+        else:
+            obs_np, act_np = filter_for_bc(merged, modes, label_mode)
+            ep_np = None
+            if split_by_episode and "episode_id" not in merged:
+                print(
+                    "BC: split_by_episode=True 但数据无 episode_id，已退回按 transition 随机划分。"
+                )
         obs_np = obs_np.astype(np.float32)
         act_np = act_np.astype(np.int64)
     elif replay_buffer is not None:
         obs_np = replay_buffer.obs[:replay_buffer.size].astype(np.float32)
         act_np = replay_buffer.actions[:replay_buffer.size].astype(np.int64)
+        ep_np = None
     else:
         raise ValueError("train_bc 需要 replay_buffer 或 mixed_dataset_path。")
 
@@ -89,12 +126,26 @@ def train_bc(
         raise ValueError(f"split 需要和为 1.0，当前为 {split}")
 
     rng = np.random.default_rng(split_seed)
-    idx = rng.permutation(n)
-    n_train = int(n * p_train)
-    n_val = int(n * p_val)
-    idx_train = idx[:n_train]
-    idx_val = idx[n_train:n_train + n_val]
-    idx_test = idx[n_train + n_val:]
+    if ep_np is not None:
+        idx_train, idx_val, idx_test = _split_indices_episode_level(ep_np, split, rng)
+        print(
+            f"BC 划分：按整条轨迹（episode），"
+            f"train_ep transitions={len(idx_train)}, val_ep={len(idx_val)}, test_ep={len(idx_test)}, "
+            f"uniq_episodes={len(np.unique(ep_np))}"
+        )
+    else:
+        idx = rng.permutation(n)
+        n_train = int(n * p_train)
+        n_val = int(n * p_val)
+        idx_train = idx[:n_train]
+        idx_val = idx[n_train:n_train + n_val]
+        idx_test = idx[n_train + n_val:]
+        print(
+            f"BC 划分：按单步 transition 随机（无 episode_id 或未启用 split_by_episode），"
+            f"n_train/n_val/n_test={len(idx_train)}/{len(idx_val)}/{len(idx_test)}"
+        )
+
+    used_episode_split = ep_np is not None
 
     def make_loader(indices, shuffle):
         x = torch.as_tensor(obs_np[indices], dtype=torch.float32)
@@ -191,6 +242,7 @@ def train_bc(
             print(f"BC best-val model saved to {best_path} (val_loss={best_val_loss:.4f})")
     if metrics_path:
         os.makedirs(os.path.dirname(metrics_path) or ".", exist_ok=True)
+        used_episode_split = ep_np is not None
         np.savez_compressed(
             metrics_path,
             **history,
@@ -199,6 +251,7 @@ def train_bc(
             n_train=len(idx_train),
             n_val=len(idx_val),
             n_test=len(idx_test),
+            split_episode_level=np.asarray([1 if used_episode_split else 0], dtype=np.uint8),
         )
         print(f"BC metrics saved to {metrics_path}")
     return net

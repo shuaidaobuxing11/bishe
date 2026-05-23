@@ -103,6 +103,7 @@ def main():
                 split=tuple(bc_cfg.get("split", (0.8, 0.1, 0.1))),
                 split_seed=int(bc_cfg.get("split_seed", 42)),
                 metrics_path=bc_cfg.get("metrics_path", "results/bc_metrics.npz"),
+                split_by_episode=bool(bc_cfg.get("split_by_episode", True)),
             )
         print("完成（mixed）。")
 
@@ -137,6 +138,7 @@ def main():
                 split=tuple(bc_cfg.get("split", (0.8, 0.1, 0.1))),
                 split_seed=int(bc_cfg.get("split_seed", 42)),
                 metrics_path=bc_cfg.get("metrics_path", "results/bc_metrics.npz"),
+                split_by_episode=bool(bc_cfg.get("split_by_episode", True)),
             )
         print("完成（单机专家采集）。")
 

@@ -1,6 +1,8 @@
 """
 离线预训练 + 在线微调：先加载 BC 权重，再用 PPO 在相同步数预算下微调。
 与纯在线基线使用相同的 total_timesteps，便于公平对比奖励与胜率。
+
+场景参数与 `train_online_baseline.py` 一致（spawn_mode / noise_sigma / model_tag）。
 """
 import os
 import sys
@@ -18,16 +20,25 @@ from online_rl.ppo_bc_finetune import PPOWithBCFinetuneExtras
 from online_rl.training_curve_callback import TrainingCurveEvalCallback
 
 
+def _scenario_tag(spawn_mode: str, noise_sigma: float, model_tag: str) -> str:
+    if model_tag.strip():
+        return model_tag.strip()
+    if spawn_mode == "default" and noise_sigma <= 0:
+        return ""
+    t = spawn_mode
+    if noise_sigma > 0:
+        t = f"{t}_noise{noise_sigma:g}".replace(".", "p")
+    return t
+
+
 def main():
     parser = argparse.ArgumentParser(description="离线 BC + 在线 PPO 微调")
     parser.add_argument("--bc_path", type=str, default="models/bc_pretrain.pt", help="BC 预训练权重路径")
     parser.add_argument("--total_timesteps", type=int, default=200_000, help="在线微调总步数（与基线一致）")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--save_dir", type=str, default="models")
-    # 稳定化：避免把 BC 初始化的策略“破坏/卡死”
     parser.add_argument("--finetune_lr", type=float, default=1e-4, help="PPO 微调学习率（比 baseline 小）")
     parser.add_argument("--ent_coef", type=float, default=0.01, help="PPO 熵系数（增强探索）")
-    # BC 参考约束（仅 finetune，在 train() loss 中加 KL + BC CE + 分段权重）
     parser.add_argument("--no_bc_regularizers", action="store_true", help="关闭 KL/BC 辅助项（退化为原版 PPO）")
     parser.add_argument("--kl_coef_start", type=float, default=0.1, help="KL(pi||pi_BC) 系数起点（remaining=1）")
     parser.add_argument("--kl_coef_end", type=float, default=0.01, help="KL 系数终点（remaining=0）")
@@ -37,13 +48,49 @@ def main():
     parser.add_argument("--curve_n_episodes", type=int, default=10, help="每次评估的 episode 数")
     parser.add_argument("--curve_out_csv", type=str, default="results/training_curves.csv", help="训练曲线 CSV 输出路径")
     parser.add_argument("--no_curve_logging", action="store_true", help="不记录 success_rate/return 训练曲线")
+    parser.add_argument(
+        "--spawn_mode",
+        type=str,
+        default="default",
+        choices=["default", "near_uavs", "near_border"],
+        help="初始分布",
+    )
+    parser.add_argument("--noise_sigma", type=float, default=0.0, help="目标扰动强度")
+    parser.add_argument(
+        "--model_tag",
+        type=str,
+        default="",
+        help="保存文件名后缀；留空则据 spawn_mode+noise 自动生成",
+    )
+    parser.add_argument(
+        "--curve_method_name",
+        type=str,
+        default="",
+        help="CSV method 列；留空则 (ppo_finetune|ppo_kl)_<tag>",
+    )
     args = parser.parse_args()
 
     if not os.path.isfile(args.bc_path):
         raise FileNotFoundError(f"请先运行脚本生成离线数据并训练 BC，得到 {args.bc_path}")
 
-    config = load_env_config()
-    env_fn = lambda: make_coop_tracking(seed=args.seed)
+    _ = load_env_config()
+
+    tag = _scenario_tag(args.spawn_mode, args.noise_sigma, args.model_tag)
+    base_curve = "ppo_finetune" if args.no_bc_regularizers else "ppo_kl"
+    if args.curve_method_name.strip():
+        curve_name = args.curve_method_name.strip()
+    elif tag:
+        curve_name = f"{base_curve}_{tag}"
+    else:
+        curve_name = base_curve
+    if tag:
+        save_path = os.path.join(args.save_dir, f"ppo_finetune_from_bc_{tag}.zip")
+    else:
+        save_path = os.path.join(args.save_dir, "ppo_finetune_from_bc.zip")
+
+    env_fn = lambda: make_coop_tracking(
+        seed=args.seed, spawn_mode=args.spawn_mode, noise_sigma=args.noise_sigma
+    )
     env = DummyVecEnv([env_fn])
 
     algo_cls = PPOWithBCFinetuneExtras
@@ -56,7 +103,6 @@ def main():
         n_epochs=10,
         gamma=0.99,
         ent_coef=args.ent_coef,
-        # 与 BC 网络一致：ReLU 激活
         policy_kwargs=dict(
             net_arch=dict(pi=[64, 64], vf=[64, 64]),
             activation_fn=torch.nn.ReLU,
@@ -89,21 +135,21 @@ def main():
     if not args.no_curve_logging:
         callbacks.append(
             TrainingCurveEvalCallback(
-                method_name="ppo_finetune",
+                method_name=curve_name,
                 eval_seed=args.seed,
                 n_episodes=args.curve_n_episodes,
                 eval_freq=args.curve_eval_freq,
                 out_csv=args.curve_out_csv,
+                spawn_mode=args.spawn_mode,
+                noise_sigma=args.noise_sigma,
             )
         )
     model.learn(total_timesteps=args.total_timesteps, callback=callbacks[0] if callbacks else None)
     os.makedirs(args.save_dir, exist_ok=True)
-    path = os.path.join(args.save_dir, "ppo_finetune_from_bc.zip")
-    # 推理与评估仅需 policy；不落盘参考 BC 子网络，减小 zip、避免冗余权重
     if getattr(model, "bc_ref_net", None) is not None:
         model.bc_ref_net = None
-    model.save(path)
-    print(f"微调策略已保存: {path}")
+    model.save(save_path)
+    print(f"微调策略已保存: {save_path}")
     env.close()
 
 

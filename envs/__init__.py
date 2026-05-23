@@ -1,4 +1,5 @@
 from envs.coop_tracking_env import CoopTrackingEnv
+from envs.coop_tracking_env_v3 import CoopTrackingEnvV3
 
 def load_env_config():
     import os
@@ -18,4 +19,16 @@ def make_coop_tracking(**kwargs):
     config.update(kwargs)
     return CoopTrackingEnv(config=config)
 
-__all__ = ["CoopTrackingEnv", "make_coop_tracking", "load_env_config"]
+
+def make_coop_tracking_v3(**kwargs):
+    """三机 MultiDiscrete 环境；不在此合并 env_config.yaml，避免与双机参数混用。"""
+    return CoopTrackingEnvV3(config=dict(kwargs))
+
+
+__all__ = [
+    "CoopTrackingEnv",
+    "CoopTrackingEnvV3",
+    "make_coop_tracking",
+    "make_coop_tracking_v3",
+    "load_env_config",
+]

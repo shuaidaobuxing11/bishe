@@ -1,0 +1,12 @@
+# Streamlit 可视化 Demo（与主训练 requirements 分离安装）
+streamlit>=1.28.0
+pandas>=2.0
+gymnasium>=0.29
+matplotlib>=3.7
+pyyaml>=6.0
+numpy>=1.24
+# BC / PPO 策略需额外: pip install -r requirements.txt（torch、stable-baselines3）
+
+# 可选：真实 JSBSim Python 绑定（Windows 上可能需自行解决 wheel/编译）
+# 安装后通常需设置环境变量 JSBSIM_ROOT 指向含 aircraft/ engine/ 等目录的数据根
+# jsbsim
